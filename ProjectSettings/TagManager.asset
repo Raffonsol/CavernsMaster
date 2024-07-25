@@ -48,8 +48,14 @@ TagManager:
   - name: LowObjects
     uniqueID: 2570159437
     locked: 0
-  - name: Characters
+  - name: CharFronts
     uniqueID: 2745271211
+    locked: 0
+  - name: CharFeet
+    uniqueID: 2987770523
+    locked: 0
+  - name: CharBacks
+    uniqueID: 2573866995
     locked: 0
   - name: HighObjects
     uniqueID: 3031475505

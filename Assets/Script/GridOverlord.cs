@@ -29,6 +29,9 @@ public class GridOverlord : MonoBehaviour
     public UIManager uIManager;
     public Dictionary<int, Dictionary<int, GameObject>> roomGrid;
 
+    public List<Fighter> defenders = new List<Fighter>();
+    public List<Fighter> attackers = new List<Fighter>();
+
     // Start is called before the first frame update
     void SecondAwake()
     {
@@ -70,8 +73,11 @@ public class GridOverlord : MonoBehaviour
         }
          else{
             defs = defParam;
-            if (defs.type != RoomType.BirthRoom) {
-            Debug.Log("Creating "+defs.type);
+            if (take>4) {
+                // too many random tries, must not be birth room, and let's just use 1x1 cause nothing else will work
+                roomObj = GameObject.Instantiate( gameLib.roomPrefab[0]);
+            }
+            else if (defs.type != RoomType.BirthRoom) {
                 // Picking a random room
                 List<RandomRoom> options = gameLib.randomRooms.OfType<RandomRoom>().ToList();
                 options.Shuffle();
@@ -177,7 +183,6 @@ public class GridOverlord : MonoBehaviour
                     ) {
                         if (take < 10) {
                             Destroy(roomObj);
-                            Debug.Log("IT HAPPENED "+take+ " ("+newX+","+newY+")");
                             CreateRoom(defParam, direction, take+1);
                         } else {
                             Debug.LogError("No room was working.");

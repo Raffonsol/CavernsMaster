@@ -13,7 +13,7 @@ public class Draggable : MonoBehaviour
     bool dragging = false;
     Vector2 fixedPosition;
     GameObject lastQuadrant;
-    // Start is called before the first frame update
+    
     public void ForcedStart()
     {
         fixedPosition = transform.position;

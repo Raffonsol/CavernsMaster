@@ -8,6 +8,7 @@ public class GameData : MonoBehaviour
     public int day;
     public int[] currencyAmounts;
     public int lastRoomId = 0;
+    public int lastCharId = 0;
     // Start is called before the first frame update
     void Start()
     {

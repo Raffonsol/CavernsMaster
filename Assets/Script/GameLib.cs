@@ -99,6 +99,74 @@ public class QuarterDefinition {
     public List<DoorType> availableDoors = new List<DoorType>();
 }
 
+
+
+
+// -=-=-=-=-=-=-=-Chars-=-=-=-=-=-=-=-=-=-=- //
+
+public enum MovementType
+{
+    Guarding, // for stationary dungeon mobs
+    Patrolling, // for patrolling dungeon mobs
+    Advancing, // for dungeon attackers
+    Retreating, // attackers once life is low or they started repeating themselves
+}
+
+[Serializable]
+public class CharStats { // saveable object
+    public string name;
+    public int faction; // 0 = dungeon | 1 = goodGuys (bad)
+
+    public int level;
+    public float range;
+    public float moveSpeed;
+
+    public float lifeCurrent;
+    public float lifeMax;
+    public float attackDamage;
+    public float armor;
+
+    public int goldDroppedMin;
+    public int goldDroppedMax;
+
+     public CharStats Clone()
+    {
+        return (CharStats)this.MemberwiseClone();
+    }
+}
+[Serializable]
+public class CharAdjustments { // saveable object
+    public float feetX = 1f;
+    public float feetY = -3f;
+}
+
+[Serializable]
+public class UniqueChar { // game data
+    public int id;
+
+    public CharStats stats;
+    public CharAdjustments adjustments;
+    
+    public Sprite foot1;
+    public Sprite foot2;
+    public Sprite bodyDown;
+    public Sprite bodyUp;
+    public Sprite attackDown;
+    public Sprite attackUp;
+
+    public UniqueChar Clone()
+    {
+        return (UniqueChar)this.MemberwiseClone();
+    }
+}
+
+
+
+
+
+
+
+
 public class GameLib : MonoBehaviour
 {
     // default prefabs
@@ -115,7 +183,11 @@ public class GameLib : MonoBehaviour
     [SerializeField]
     public Currency[] currencies; 
     [SerializeField]
-    public RandomRoom[] randomRooms; 
+    public RandomRoom[] randomRooms;
+    [SerializeField]
+    public UniqueChar[] monsters; 
+    [SerializeField]
+    public UniqueChar[] evilGoodGuys; 
 
     // Start is called before the first frame update
     void Start()

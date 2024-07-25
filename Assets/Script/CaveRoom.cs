@@ -182,6 +182,10 @@ public class CaveRoom : MonoBehaviour
         quarterDefinition.isFirstQuarter = true;
         CheckStatus();
     }
+    public void DeclareFigher(Fighter fighter) {
+
+    }
+
     GameObject InstantiatePlus(float x, float y, int createsX, int createsY, string direction) {
         GameObject plus = GameObject.Instantiate(GridOverlord.Instance.gameLib.plusPrefab);
         plus.transform.SetParent(transform);
