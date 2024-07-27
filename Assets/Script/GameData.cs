@@ -5,7 +5,7 @@ using System;
 
 public class GameData : MonoBehaviour
 {
-    public int day;
+    public int level = 0;
     public int[] currencyAmounts;
     public int lastRoomId = 0;
     public int lastCharId = 0;
@@ -21,6 +21,7 @@ public class GameData : MonoBehaviour
         
     }
     void NewGame() {
+        level = 0;
         GridOverlord.Instance.CreateRoom(null, "");
         GridOverlord.Instance.CreateRoom(new RoomDefinition()
         {

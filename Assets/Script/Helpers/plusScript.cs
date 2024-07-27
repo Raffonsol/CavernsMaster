@@ -53,7 +53,12 @@ public class plusScript : MonoBehaviour
                 type = RoomType.DefaultRoom
             }, direction);
             forCave.OpenRoom(direction);
-            // gameObject.SetActive(false);
+
+            // add this room as a backwards movement option for just opened room
+            CaveRoom newRoom = GridOverlord.Instance.roomGrid[xPos][yPos].GetComponent<CaveRoom>();
+            newRoom.backwardsCoo.Add(new Coordinates(){x=forCave.defs.xPos,y=forCave.defs.yPos,});
+            // add new room as forwards option for this room
+            forCave.forwardCoo.Add(new Coordinates(){x=xPos,y=yPos,});
         }
     }
 

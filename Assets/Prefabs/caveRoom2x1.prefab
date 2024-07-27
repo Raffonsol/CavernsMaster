@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4734300367493809027}
   - component: {fileID: 1553226344971920972}
   - component: {fileID: 9102474662111366248}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant3
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -140,7 +140,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5702428261754113453}
   - component: {fileID: 4939300368245268038}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 4869257824213742726}
   - component: {fileID: 5063541047145407022}
   - component: {fileID: 8637773334853659244}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant0
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -354,7 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8832984568501602931}
   - component: {fileID: 410825330555703054}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -439,7 +439,7 @@ GameObject:
   - component: {fileID: 3407713741793596543}
   - component: {fileID: 4825238337707446208}
   - component: {fileID: 691951507839501210}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant1
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -569,7 +569,7 @@ GameObject:
   - component: {fileID: 3854615899470392020}
   - component: {fileID: 4361195295706117751}
   - component: {fileID: 7157215249561040569}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quarter1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -679,7 +679,9 @@ MonoBehaviour:
   quarterDefinition:
     isQuarter: 1
     xShift: 0
-    yshift: 0
+    yShift: 0
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1
@@ -705,7 +707,7 @@ GameObject:
   - component: {fileID: 3511135681326959485}
   - component: {fileID: 7463724553786420687}
   - component: {fileID: 679023014954600230}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant1
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -834,7 +836,7 @@ GameObject:
   m_Component:
   - component: {fileID: 843637219521573132}
   - component: {fileID: 1464485662874933634}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -919,7 +921,7 @@ GameObject:
   - component: {fileID: 5067581504054481211}
   - component: {fileID: 6174571824741834897}
   - component: {fileID: 2677744541966635872}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quarter2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1029,7 +1031,9 @@ MonoBehaviour:
   quarterDefinition:
     isQuarter: 1
     xShift: 1
-    yshift: 0
+    yShift: 0
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1
@@ -1054,7 +1058,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5886544568941058562}
   - component: {fileID: 8395421620905494718}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1139,7 +1143,7 @@ GameObject:
   - component: {fileID: 8046105420934420622}
   - component: {fileID: 1406192454142245516}
   - component: {fileID: 1289020229123514315}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant3
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -1268,7 +1272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1403926631948328208}
   - component: {fileID: 5326948408562913417}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveEntrance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1353,7 +1357,7 @@ GameObject:
   - component: {fileID: 5355462293248783567}
   - component: {fileID: 5745921982867143574}
   - component: {fileID: 8115493391303217839}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant0
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -1483,7 +1487,7 @@ GameObject:
   - component: {fileID: 136526772642233165}
   - component: {fileID: 4554246451717639705}
   - component: {fileID: 2245366249487631822}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant2
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -1612,7 +1616,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7339239456727566500}
   - component: {fileID: 6533602558689683574}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveEntrance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1696,7 +1700,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2000456690755496745}
   - component: {fileID: 642472328651136431}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1780,7 +1784,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5426422860708661647}
   - component: {fileID: 860019250457645556}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1865,7 +1869,7 @@ GameObject:
   - component: {fileID: 6625083193339549187}
   - component: {fileID: 2187168876910417353}
   - component: {fileID: 4006900602347686944}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant2
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -1994,7 +1998,7 @@ GameObject:
   m_Component:
   - component: {fileID: 471609590703496897}
   - component: {fileID: 8516668663147445432}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveRoom2x1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

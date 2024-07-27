@@ -21,6 +21,10 @@ public class CaveRoom : MonoBehaviour
     // game objects -- content
     public List<DivisionUsage> sections;
 
+    // pathing
+    public List<Coordinates> forwardCoo = new List<Coordinates>();
+    public List<Coordinates> backwardsCoo = new List<Coordinates>();
+
     // definitions
     [SerializeField]
     public RoomDefinition defs;
@@ -184,6 +188,15 @@ public class CaveRoom : MonoBehaviour
     }
     public void DeclareFigher(Fighter fighter) {
 
+    }
+    public bool CanGo(string direction) {
+        if (direction == "up") return  GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos) && GridOverlord.Instance.roomGrid[defs.xPos].ContainsKey(defs.yPos+1)&& (defs.frontDoor || GridOverlord.Instance.roomGrid[defs.xPos][defs.yPos+1].transform.parent == transform.parent);
+        if (direction == "left") return GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos-1) && GridOverlord.Instance.roomGrid[defs.xPos-1].ContainsKey(defs.yPos) && (defs.leftDoor || GridOverlord.Instance.roomGrid[defs.xPos-1][defs.yPos].transform.parent == transform.parent);
+        if (direction == "right") return  GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos+1) && GridOverlord.Instance.roomGrid[defs.xPos+1].ContainsKey(defs.yPos)&& (defs.rightDoor || GridOverlord.Instance.roomGrid[defs.xPos+1][defs.yPos].transform.parent == transform.parent);
+        if (direction == "down") return GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos) && GridOverlord.Instance.roomGrid[defs.xPos].ContainsKey(defs.yPos-1) && (defs.backDoor || GridOverlord.Instance.roomGrid[defs.xPos][defs.yPos-1].transform.parent == transform.parent);
+
+        Debug.LogError("Direction should up, left, right, or down. You sent "+direction+". \nYou silly goose");
+        return false;
     }
 
     GameObject InstantiatePlus(float x, float y, int createsX, int createsY, string direction) {

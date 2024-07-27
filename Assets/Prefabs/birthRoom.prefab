@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 471609590703496897}
   - component: {fileID: 8257730708669256782}
   - component: {fileID: 1901736961557358935}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: birthRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,6 +106,12 @@ MonoBehaviour:
   rightPlus: {fileID: 0}
   frontPlus: {fileID: 0}
   quadrants: []
+  quarterDefinition:
+    isQuarter: 0
+    xShift: 0
+    yShift: 0
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1

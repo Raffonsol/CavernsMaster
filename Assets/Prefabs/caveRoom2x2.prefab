@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4734300367493809027}
   - component: {fileID: 1553226344971920972}
   - component: {fileID: 9102474662111366248}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant3
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 4866752357609373131}
   - component: {fileID: 5153803143596376097}
   - component: {fileID: 2461659906571031695}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant2
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -270,7 +270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5702428261754113453}
   - component: {fileID: 4939300368245268038}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 187484319263763095}
   - component: {fileID: 4482960623492039549}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -439,7 +439,7 @@ GameObject:
   - component: {fileID: 4869257824213742726}
   - component: {fileID: 5063541047145407022}
   - component: {fileID: 8637773334853659244}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant0
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -568,7 +568,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8461925203568991305}
   - component: {fileID: 5232792098478792209}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -653,7 +653,7 @@ GameObject:
   - component: {fileID: 2687105266732273279}
   - component: {fileID: 7229341459402027781}
   - component: {fileID: 6787655213650816699}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant3
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -782,7 +782,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8832984568501602931}
   - component: {fileID: 410825330555703054}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -867,7 +867,7 @@ GameObject:
   - component: {fileID: 3407713741793596543}
   - component: {fileID: 4825238337707446208}
   - component: {fileID: 691951507839501210}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant1
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -997,7 +997,7 @@ GameObject:
   - component: {fileID: 8349848615089385337}
   - component: {fileID: 2169540700417342548}
   - component: {fileID: 4706179715012428211}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant0
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -1127,7 +1127,7 @@ GameObject:
   - component: {fileID: 3854615899470392020}
   - component: {fileID: 4361195295706117751}
   - component: {fileID: 7157215249561040569}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quarter1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1238,6 +1238,8 @@ MonoBehaviour:
     isQuarter: 1
     xShift: 0
     yShift: 0
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1
@@ -1263,7 +1265,7 @@ GameObject:
   - component: {fileID: 3511135681326959485}
   - component: {fileID: 7463724553786420687}
   - component: {fileID: 679023014954600230}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant1
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -1392,7 +1394,7 @@ GameObject:
   m_Component:
   - component: {fileID: 843637219521573132}
   - component: {fileID: 1464485662874933634}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1476,7 +1478,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7799523419949385541}
   - component: {fileID: 276225547014452978}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1561,7 +1563,7 @@ GameObject:
   - component: {fileID: 2235239253915649775}
   - component: {fileID: 6381126597702781261}
   - component: {fileID: 4866901185920941669}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quarter4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1672,6 +1674,8 @@ MonoBehaviour:
     isQuarter: 1
     xShift: 1
     yShift: 1
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1
@@ -1697,7 +1701,7 @@ GameObject:
   - component: {fileID: 411328266175140409}
   - component: {fileID: 1609765883921297220}
   - component: {fileID: 5590855710520956340}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant1
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -1827,7 +1831,7 @@ GameObject:
   - component: {fileID: 5067581504054481211}
   - component: {fileID: 6174571824741834897}
   - component: {fileID: 2677744541966635872}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quarter2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1938,6 +1942,8 @@ MonoBehaviour:
     isQuarter: 1
     xShift: 1
     yShift: 0
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1
@@ -1962,7 +1968,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5886544568941058562}
   - component: {fileID: 8395421620905494718}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2047,7 +2053,7 @@ GameObject:
   - component: {fileID: 2881146386753839570}
   - component: {fileID: 6015033242774078760}
   - component: {fileID: 8912323608310432716}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant0
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -2177,7 +2183,7 @@ GameObject:
   - component: {fileID: 8046105420934420622}
   - component: {fileID: 1406192454142245516}
   - component: {fileID: 1289020229123514315}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant3
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -2306,7 +2312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7281947218361795812}
   - component: {fileID: 6396156498513191247}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveEntrance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2390,7 +2396,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1403926631948328208}
   - component: {fileID: 5326948408562913417}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveEntrance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2475,7 +2481,7 @@ GameObject:
   - component: {fileID: 5355462293248783567}
   - component: {fileID: 5745921982867143574}
   - component: {fileID: 8115493391303217839}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant0
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -2604,7 +2610,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2618379959194939501}
   - component: {fileID: 4121849690813026077}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2689,7 +2695,7 @@ GameObject:
   - component: {fileID: 1896879170616186449}
   - component: {fileID: 4112439673538337129}
   - component: {fileID: 334324141465687121}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveEntrance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2792,6 +2798,8 @@ MonoBehaviour:
     isQuarter: 0
     xShift: 0
     yShift: 0
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1
@@ -2817,7 +2825,7 @@ GameObject:
   - component: {fileID: 136526772642233165}
   - component: {fileID: 4554246451717639705}
   - component: {fileID: 2245366249487631822}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant2
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -2946,7 +2954,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1005550737819681529}
   - component: {fileID: 8164161612741015559}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorwayR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3030,7 +3038,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7339239456727566500}
   - component: {fileID: 6533602558689683574}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveEntrance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3114,7 +3122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6074422031140589097}
   - component: {fileID: 3575787638877197892}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3199,7 +3207,7 @@ GameObject:
   - component: {fileID: 7104887849201654187}
   - component: {fileID: 5701506774574034077}
   - component: {fileID: 3589089496326175858}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant3
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -3328,7 +3336,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2000456690755496745}
   - component: {fileID: 642472328651136431}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3413,7 +3421,7 @@ GameObject:
   - component: {fileID: 8719045897133022534}
   - component: {fileID: 6079202163361783240}
   - component: {fileID: 9096117250749342154}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quarter3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3524,6 +3532,8 @@ MonoBehaviour:
     isQuarter: 1
     xShift: 0
     yShift: 1
+    isFirstQuarter: 0
+    availableDoors: 
   sections: []
   defs:
     id: 1
@@ -3549,7 +3559,7 @@ GameObject:
   - component: {fileID: 9010653812766845293}
   - component: {fileID: 1325527447532266594}
   - component: {fileID: 6128461998761559994}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant1
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -3678,7 +3688,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5426422860708661647}
   - component: {fileID: 860019250457645556}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveDoorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3763,7 +3773,7 @@ GameObject:
   - component: {fileID: 6625083193339549187}
   - component: {fileID: 2187168876910417353}
   - component: {fileID: 4006900602347686944}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant2
   m_TagString: Quadrant
   m_Icon: {fileID: 0}
@@ -3892,7 +3902,7 @@ GameObject:
   m_Component:
   - component: {fileID: 471609590703496897}
   - component: {fileID: 2085597446593843487}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: caveRoom2x2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3981,7 +3991,7 @@ GameObject:
   - component: {fileID: 74713318481525970}
   - component: {fileID: 4789207585388499830}
   - component: {fileID: 8649701715531298910}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: quadrant2
   m_TagString: Quadrant
   m_Icon: {fileID: 0}

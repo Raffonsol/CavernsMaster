@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum TargetType
 {
@@ -35,11 +36,41 @@ public class HoverTarget : MonoBehaviour
             if (item == TargetType.Currency) {
                 uIManager.ShowCurrency(subTypeIds[i]);
             }
+            if (item == TargetType.WarriorMenu) {
+                uIManager.ShowWarriorMenu(subTypeIds[i]);
+            }
         }
     }
  
    void OnMouseExit()
    {
-       uIManager.HideCurrency();
+        StartCoroutine(ExecuteAfterTime(4f, () =>
+        {        
+            for( int i = 0; i<uITypes.Length; i++)
+            {
+                TargetType item =uITypes[i];
+                if (item == TargetType.Currency) {
+                    uIManager.HideCurrency();
+                }
+                if (item == TargetType.WarriorMenu) {
+                    uIManager.HidewWarriorMenu();
+                }
+            }
+        }));
    }
+
+    bool isCoroutineExecuting = false;
+    IEnumerator ExecuteAfterTime(float time, Action task)
+    {
+        if (isCoroutineExecuting)
+            yield break;
+            
+        isCoroutineExecuting = true;
+
+        yield return new WaitForSeconds(time);
+
+        task();
+
+        isCoroutineExecuting = false;
+    }
 }

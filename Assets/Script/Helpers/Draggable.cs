@@ -10,7 +10,7 @@ public class Draggable : MonoBehaviour
     public Vector2 diviShift;
     public bool fixedPos = false;
     bool hovering = false;
-    bool dragging = false;
+    public bool dragging = false;
     Vector2 fixedPosition;
     GameObject lastQuadrant;
     
@@ -35,6 +35,10 @@ public class Draggable : MonoBehaviour
         fixedPosition = transform.position;
         inRoom = lastQuadrant.gameObject.transform.parent.GetComponent<CaveRoom>();
         inQuadrant = Int32.Parse(lastQuadrant.name.Substring(8));
+        try {
+            gameObject.GetComponent<Fighter>().inRoom = inRoom;
+            inRoom.DeclareFigher(gameObject.GetComponent<Fighter>());
+        } catch{}
     }
 
     void OnMouseDown()

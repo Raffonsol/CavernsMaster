@@ -12,7 +12,18 @@ public class Currency
     public float startingAmount;
     public Sprite icon;
 }
+[Serializable]
+public class Coordinates 
+{
+    public int x;
+    public int y;
+}
 
+
+
+
+
+// -=-=-=-=-=-=-=-Map-=-=-=-=-=-=-=-=-=-=- //
 [Serializable]
 public class DivisionUsage
 {
@@ -68,6 +79,7 @@ public class RandomRoom {
     public Sprite sprite;
     public RoomType type;
     public Door[] doors;
+    public Coordinates[] path;
 }
 
 [Serializable]
@@ -102,7 +114,7 @@ public class QuarterDefinition {
 
 
 
-// -=-=-=-=-=-=-=-Chars-=-=-=-=-=-=-=-=-=-=- //
+// -o-o-o-o-o-o-o-Chars-o-o-o-o-o-o-o-o-o-o- //
 
 public enum MovementType
 {
@@ -135,9 +147,10 @@ public class CharStats { // saveable object
     }
 }
 [Serializable]
-public class CharAdjustments { // saveable object
+public class CharAdjustments { 
     public float feetX = 1f;
     public float feetY = -3f;
+    public float heaveFactor = 1f;
 }
 
 [Serializable]
@@ -162,6 +175,21 @@ public class UniqueChar { // game data
 
 
 
+// ~=~=~=~=~=~=~=~Waveees~=~=~=~=~=~=~=~=~=~=~ //
+[Serializable]
+public class Wave {
+    public float timeOffset;
+    public int[] attackers;
+}
+[Serializable]
+public class Raid { // saveable object
+    public int id;
+    public int level;
+    public Wave[] waves; 
+
+    public int reward;
+}
+
 
 
 
@@ -172,6 +200,7 @@ public class GameLib : MonoBehaviour
     // default prefabs
     public GameObject[] roomPrefab;
     public GameObject plusPrefab;
+    public GameObject mobPrefab;
 
     // textures
     public Texture2D pointerCursorTexture;
@@ -188,6 +217,8 @@ public class GameLib : MonoBehaviour
     public UniqueChar[] monsters; 
     [SerializeField]
     public UniqueChar[] evilGoodGuys; 
+    [SerializeField]
+    public Raid[] raids; 
 
     // Start is called before the first frame update
     void Start()

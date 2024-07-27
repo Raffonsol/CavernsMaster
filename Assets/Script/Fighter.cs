@@ -33,6 +33,9 @@ public class Fighter : MonoBehaviour
     private bool facingUp = false;
     private GameObject lastQuadrant;
 
+    // pathing
+    private List<Coordinates> walked = new List<Coordinates>();
+
     // combat
     private Fighter inFight;
 
@@ -48,6 +51,9 @@ public class Fighter : MonoBehaviour
     void Start()
     {
         targetPosition = transform.position;
+        if (stats.faction == 1 ){
+            walked.Add(new Coordinates(){x=0, y=0,});
+        }
     }
 
     public void CheckStatus() {
@@ -61,6 +67,8 @@ public class Fighter : MonoBehaviour
         }
         FixLooks();
         stepDefaultY += leg1.transform.localPosition.y;
+        fighterId = GridOverlord.Instance.gameData.lastCharId;
+        GridOverlord.Instance.gameData.lastCharId++;
     }
 
     public void SetMoveTarget(Vector2 target) {
@@ -69,13 +77,12 @@ public class Fighter : MonoBehaviour
     }
 
     public void Die() {
-        if (stats.faction == 0) {
-            GridOverlord.Instance.defenders.Remove(this);
-        } else {
-            GridOverlord.Instance.attackers.Remove(this);
-        }
-        // TODO: Death animation
-        Destroy(gameObject);
+        SafelyRemoveChar();
+        // Todo: add reward money
+    }
+    public void Retreat() {
+        SafelyRemoveChar();
+        // Todo: remove money they stole
     }
     
     
@@ -83,15 +90,16 @@ public class Fighter : MonoBehaviour
     void FixedUpdate()
     {
         Move();
-        Heave();
+        RunAi();
     }
 
     void Move() {
         if (still) {
+            Heave();
             return;
         }
         if (Vector3.Distance(transform.position, targetPosition) < 1f) {
-            still = false;
+            still = true;
             StopStepping();
             return;
         }
@@ -99,7 +107,7 @@ public class Fighter : MonoBehaviour
         Step();
 
         Vector2 currentPosition = transform.position;
-        transform.position = ( Vector3.Lerp (currentPosition, targetPosition, stats.moveSpeed * Time.deltaTime));
+        transform.position = ( Vector3.Lerp (currentPosition, targetPosition, stats.moveSpeed * Time.deltaTime*0.2f));
 
         //flip
         if (!facingUp) {
@@ -147,7 +155,7 @@ public class Fighter : MonoBehaviour
             heaveTimer -= Time.deltaTime;
 
             Vector2 pos = body.transform.localPosition;
-            pos.y += 0.01f*(heavingUp ? 1 : -1);
+            pos.y += 0.01f*(heavingUp ? 1 : -1)*adjustments.heaveFactor;
             body.transform.localPosition = pos;
 
         } else {
@@ -161,15 +169,59 @@ public class Fighter : MonoBehaviour
         
         leg1.GetComponent<SpriteRenderer>().sprite = foot1;
         leg2.GetComponent<SpriteRenderer>().sprite = foot2;
-        body.GetComponent<SpriteRenderer>().sprite = bodyUp;
+        body.GetComponent<SpriteRenderer>().sprite = bodyDown;
+    }
+    void RunAi() {
+        if (stats.faction == 0 ){
+            return; // for now defenders just don't do anything
+        }
+
+        if (still) {
+            // just standing, so let's find what to do next.
+            Coordinates nextRoom = new Coordinates(){x=inRoom.defs.xPos, y=inRoom.defs.yPos};
+            
+            if (currentMovementType == MovementType.Advancing){
+                inRoom.forwardCoo.Shuffle();
+
+                if (inRoom.forwardCoo.Count == 0){
+                    currentMovementType = MovementType.Retreating;
+                    return;
+                }
+                nextRoom = inRoom.forwardCoo[0];
+            } else if (currentMovementType == MovementType.Retreating) {
+                if (inRoom.backwardsCoo.Count == 0){
+                    Retreat();
+                    return;
+                }
+                nextRoom = inRoom.backwardsCoo[0];
+            }
+
+            SetMoveTarget(GridOverlord.Instance.roomGrid[nextRoom.x][nextRoom.y].gameObject.transform.position+ new Vector3(UnityEngine.Random.Range(-2f,2f),UnityEngine.Random.Range(-2f,2f),0));
+                
+        }
+
+    }
+    void SafelyRemoveChar() {
+        if (stats.faction == 0) {
+            GridOverlord.Instance.defenders.Remove(this);
+        } else {
+            GridOverlord.Instance.attackers.Remove(this);
+        }
+        // TODO: Death animation
+        Destroy(gameObject);
     }
     void OnTriggerEnter2D(Collider2D col)
-    {
-        
+    { 
+        try {
+            if(gameObject.GetComponent<Draggable>().dragging) {
+                return;
+            }
+        } catch {}
         if (col.gameObject.tag == "Quadrant")
         {
             lastQuadrant = col.gameObject;
-            lastQuadrant.transform.parent.GetComponent<CaveRoom>().DeclareFigher(this);
+            inRoom = lastQuadrant.transform.parent.GetComponent<CaveRoom>();
+            inRoom.DeclareFigher(this);
         }
     }
 
