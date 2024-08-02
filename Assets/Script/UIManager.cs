@@ -7,17 +7,31 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
     public GameObject currencyPanel;
+    public GameObject costPanel;
     public GameLib lib;
     public GameObject warriorPanels;
     public GameObject nextButton;
-    // Start is called before the first frame update
+
+    private bool showingWarriors = false;
+    
     void Start()
     {
         lib = GridOverlord.Instance.gameLib;
             nextButton.transform.Find("Panel").gameObject.GetComponent<Button>().onClick.AddListener(() => {
-            GridOverlord.Instance.StartNextRaid();
-            nextButton.transform.Find("Panel").gameObject.SetActive(false);
+                GridOverlord.Instance.StartNextRaid();
+                nextButton.transform.Find("Panel").gameObject.SetActive(false);
         });
+    }
+
+    void Update() {
+        if (Input.GetKeyUp("1") && showingWarriors && GridOverlord.Instance.gameData.CheckIfCanAfford(1, 1)) {
+            GridOverlord.Instance.gameData.SpendCurrency(1, 1);
+            GridOverlord.Instance.CreateMob(0);
+        }
+        if (Input.GetKeyUp("2") && showingWarriors && GridOverlord.Instance.gameData.CheckIfCanAfford(1, 1)) {
+            GridOverlord.Instance.gameData.SpendCurrency(1, 1);
+            GridOverlord.Instance.CreateMob(1);
+        }
     }
 
     public void ShowCurrency(int currencyIndex)
@@ -35,23 +49,31 @@ public class UIManager : MonoBehaviour
     public void ShowWarriorMenu(int warriorMenuIndex)
     {
         warriorPanels.transform.Find("Panel").gameObject.SetActive(true);
-        Button btn = warriorPanels.transform.Find("Panel/0").gameObject.GetComponent<Button>();
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => GridOverlord.Instance.CreateMob(0));
-        // warriorPanels.transform.Find("Panel/Image").GetComponent<Image>().sprite = currency.icon;
-        // warriorPanels.transform.Find("Panel/Description").GetComponent<TextMeshProUGUI>().text = currency.name;
-        // warriorPanels.transform.Find("Panel/Value").GetComponent<TextMeshProUGUI>().text = GridOverlord.Instance.gameData.currencyAmounts[currencyIndex].ToString();
+        showingWarriors = true;
+        // Button btn = warriorPanels.transform.Find("Panel/0").gameObject.GetComponent<Button>();
+        // btn.onClick.RemoveAllListeners();
+        // btn.onClick.AddListener(() => GridOverlord.Instance.CreateMob(0));
     } 
     public void HidewWarriorMenu()
     {
         warriorPanels.transform.Find("Panel").gameObject.SetActive(false);
+        showingWarriors = false;
     } 
-
-
-
-    // Update is called once per frame
-    void Update()
+     public void ShowCostMenu(int purchaseableIndex)
     {
-        
-    }
+        Sale sale = lib.sales[purchaseableIndex];
+        Currency currency = lib.currencies[sale.currency];
+        costPanel.transform.Find("Panel").gameObject.SetActive(true);
+        currencyPanel.transform.Find("Panel/Image").GetComponent<Image>().sprite = currency.icon;
+        currencyPanel.transform.Find("Panel/Description").GetComponent<TextMeshProUGUI>().text = sale.name;
+        currencyPanel.transform.Find("Panel/Value").GetComponent<TextMeshProUGUI>().text = sale.cost.ToString();
+    } 
+    public void HideCost()
+    {
+        costPanel.transform.Find("Panel").gameObject.SetActive(false);
+    } 
+     public void ShowNextRaidButton()
+    {
+        nextButton.transform.Find("Panel").gameObject.SetActive(true);
+    } 
 }

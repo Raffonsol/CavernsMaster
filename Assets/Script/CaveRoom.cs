@@ -46,6 +46,11 @@ public class CaveRoom : MonoBehaviour
             // doors and plusses
             if (defs.isMain) {
                 entrance.SetActive(true);
+            }else if (defs.backDoor) {
+                entrance.SetActive(true);
+                entrance.GetComponent<SpriteRenderer>().sprite = frontDoorway.GetComponent<SpriteRenderer>().sprite;
+                entrance.GetComponent<SpriteRenderer>().flipY = true;
+                entrance.transform.position = new Vector2(entrance.transform.position.x, entrance.transform.position.y-0.06f);
             }else {
                 entrance.SetActive(false);
                 
@@ -157,7 +162,10 @@ public class CaveRoom : MonoBehaviour
                     needsCollider=true;
                 }
                 Draggable drag = contenter.AddComponent<Draggable>();
-                drag.fixedPos = divi.effect.Contains("fp");
+                if (divi.effect.Contains("fp")){
+                    // drag.gameObject.layer = 2;
+                    drag.fixedPos = true;
+                }
                 drag.inRoom = this;
                 drag.inQuadrant = i;
                 drag.diviShift = divi.shift;
@@ -187,9 +195,19 @@ public class CaveRoom : MonoBehaviour
         CheckStatus();
     }
     public void DeclareFigher(Fighter fighter) {
-
+        List<Fighter> enemies = fighter.stats.faction == 0 ? GridOverlord.Instance.attackers : GridOverlord.Instance.defenders;
+        enemies.Shuffle();
+        
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (enemies[i].inRoom == this) {
+                fighter.InitiateCombat(enemies[i]);
+                enemies[i].InitiateCombat(fighter);
+            }            
+        }
     }
     public bool CanGo(string direction) {
+        //                            (  x exists                                                       y exists                                                 ) AND   (either there is a door or the caveRooms have the same parent, meaning they are actually parts of one bigger room)       
         if (direction == "up") return  GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos) && GridOverlord.Instance.roomGrid[defs.xPos].ContainsKey(defs.yPos+1)&& (defs.frontDoor || GridOverlord.Instance.roomGrid[defs.xPos][defs.yPos+1].transform.parent == transform.parent);
         if (direction == "left") return GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos-1) && GridOverlord.Instance.roomGrid[defs.xPos-1].ContainsKey(defs.yPos) && (defs.leftDoor || GridOverlord.Instance.roomGrid[defs.xPos-1][defs.yPos].transform.parent == transform.parent);
         if (direction == "right") return  GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos+1) && GridOverlord.Instance.roomGrid[defs.xPos+1].ContainsKey(defs.yPos)&& (defs.rightDoor || GridOverlord.Instance.roomGrid[defs.xPos+1][defs.yPos].transform.parent == transform.parent);

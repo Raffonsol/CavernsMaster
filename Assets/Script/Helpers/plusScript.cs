@@ -20,6 +20,10 @@ public class plusScript : MonoBehaviour
         Color color = GetComponent<SpriteRenderer>().color;
         color.a = 0.1f;
         GetComponent<SpriteRenderer>().color = color;
+        HoverTarget costHover = gameObject.AddComponent<HoverTarget>();
+        costHover.uITypes = new TargetType[]{(TargetType)4,(TargetType)0};
+        costHover.subTypeIds = new int[]{0,0};
+        costHover.ForcedStart();
     }
 
     // Update is called once per frame
@@ -45,6 +49,11 @@ public class plusScript : MonoBehaviour
     void OnMouseUp()
     {
         if(hovering){
+            if (!GridOverlord.Instance.gameData.CheckIfCanAfford(0,5)){ // HARDCODED ROOM COST CHANGE THIS!!!
+                // TODO: Can't afford message!
+                return;
+            }
+            GridOverlord.Instance.gameData.SpendCurrency(0,5);
             GridOverlord.Instance.CreateRoom(new RoomDefinition(){
                 size = 0,
                 contentIds = new int[]{-1, -1, -1, -1},
@@ -59,6 +68,11 @@ public class plusScript : MonoBehaviour
             newRoom.backwardsCoo.Add(new Coordinates(){x=forCave.defs.xPos,y=forCave.defs.yPos,});
             // add new room as forwards option for this room
             forCave.forwardCoo.Add(new Coordinates(){x=xPos,y=yPos,});
+
+
+            OnMouseExit();
+            GridOverlord.Instance.uIManager.HideCost();
+            GridOverlord.Instance.uIManager.HideCurrency();
         }
     }
 

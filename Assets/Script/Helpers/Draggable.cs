@@ -27,6 +27,23 @@ public class Draggable : MonoBehaviour
             transform.position = new Vector2(pos.x, pos.y);
         }
     }
+    void FixedUpdate(){
+        // if (Input.GetButtonUp("Fire1") && hovering && !fixedPos) {
+        //     dragging = true;
+        //     CameraController.noDrag = true;
+        // }
+        if (Input.GetMouseButtonDown(0)&& !fixedPos)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.GetRayIntersection(ray,Mathf.Infinity);
+                    
+            if(hit.collider != null && hit.collider.transform == gameObject.transform)
+                {
+                    dragging = true;
+                    CameraController.noDrag = true;
+                }
+        }
+    }
     public void Drop()
     {
         
@@ -43,7 +60,7 @@ public class Draggable : MonoBehaviour
 
     void OnMouseDown()
     {
-        if(hovering && !fixedPos){
+        if(!fixedPos){
             dragging = true;
             CameraController.noDrag = true;
         }
@@ -63,7 +80,7 @@ public class Draggable : MonoBehaviour
     }
 
     void OnMouseExit()
-    {
+    {      
         hovering = false;
     }
     void OnTriggerEnter2D(Collider2D col)
@@ -73,5 +90,20 @@ public class Draggable : MonoBehaviour
         {
             lastQuadrant = col.gameObject;
         }
+    }
+
+    bool isCoroutineExecuting = false;
+    IEnumerator ExecuteAfterTime(float time, Action task)
+    {
+        if (isCoroutineExecuting)
+            yield break;
+            
+        isCoroutineExecuting = true;
+
+        yield return new WaitForSeconds(time);
+
+        task();
+
+        isCoroutineExecuting = false;
     }
 }

@@ -33,8 +33,10 @@ public class GridOverlord : MonoBehaviour
     public List<Fighter> attackers = new List<Fighter>();
 
     private bool raidOngoing = false;
+    private bool lastWaveSent = false;
     private Raid ongoingRaid;
     private float raidTimer = 0f;
+    private float raidCountdown = 0f;
     private List<int> waveIndexes;
 
 
@@ -51,6 +53,16 @@ public class GridOverlord : MonoBehaviour
         if (raidOngoing) {
             raidTimer+=Time.deltaTime;
 
+            if (lastWaveSent) {
+                raidCountdown-=Time.deltaTime;
+                if (raidCountdown < 0) {
+                    // RAID OVER
+                    gameData.level++;
+                    raidOngoing = false;
+                    gameData.AddCurrency(0,ongoingRaid.reward);
+                    uIManager.ShowNextRaidButton();
+                }
+            } else
             for (int i = 0; i < ongoingRaid.waves.Length; i++)
             {
                 if (raidTimer >= ongoingRaid.waves[i].timeOffset && !waveIndexes.Contains(i)){
@@ -58,6 +70,10 @@ public class GridOverlord : MonoBehaviour
                     for (int j = 0; j < ongoingRaid.waves[i].attackers.Length; j++)
                     {
                         CreateAttacker(ongoingRaid.waves[i].attackers[j]);
+                    }
+                    if (waveIndexes.Count == ongoingRaid.waves.Length) {
+                        lastWaveSent = true;
+                        raidCountdown = ongoingRaid.timeAfterLastWaveToEnd;
                     }
                 }
             }
@@ -225,6 +241,13 @@ public class GridOverlord : MonoBehaviour
             {
                  // pathing
                 int quarterIndex = quarters.FindIndex(0,quarters.Count, (CaveRoom q) => randomRoom.path[i].x == q.quarterDefinition.xShift && randomRoom.path[i].y == q.quarterDefinition.yShift);
+
+                //enable quarters for dragging things into
+                for (int j = 0; j < 4; j++)
+                {
+                    quarters[quarterIndex].quadrants[j].SetActive(true);   
+                }
+
                 // I don't even want to get into this. Basically it creates paths by giving each room a forward array of all the possible rooms to go forward to, and a backwards array with how to return from it
                 if (i-1 >= 0) {
                     if (firstQuarterFound){
@@ -256,11 +279,13 @@ public class GridOverlord : MonoBehaviour
 
     public void CreateMob(int mobIndex) {
         GameObject instance = GameObject.Instantiate(gameLib.mobPrefab);
-        instance.transform.position = roomGrid[0][-1].transform.position;
+        instance.transform.position = roomGrid[0][-1].transform.position + new Vector3(UnityEngine.Random.Range(-1.5f,1.5f),UnityEngine.Random.Range(-0.5f,1.5f), 0);
         Fighter fighter = instance.GetComponent<Fighter>();
+        defenders.Add(fighter);
         UniqueChar mobDef = gameLib.monsters[mobIndex];
         fighter.adjustments = mobDef.adjustments;
         fighter.stats = mobDef.stats;
+        instance.transform.localScale = instance.transform.localScale*fighter.adjustments.scale;
 
         fighter.foot1 = mobDef.foot1;
         fighter.foot2 = mobDef.foot2;
@@ -268,19 +293,26 @@ public class GridOverlord : MonoBehaviour
         fighter.bodyDown = mobDef.bodyDown;
         fighter.attackDown = mobDef.attackDown;
         fighter.attackUp = mobDef.attackUp;
+        fighter.rangedAttackSprite = mobDef.rangedAttackSprite;
+
+        fighter.attackSound = mobDef.attackSound;
+        fighter.deathSound = mobDef.deathSound;
 
         // instance.AddComponent<PolygonCollider2D>();
         Draggable drag = instance.AddComponent<Draggable>();
         drag.fixedPos = false;
         drag.inRoom = roomGrid[0][-1].GetComponent<CaveRoom>();
         drag.inQuadrant = 0;
+        drag.diviShift = new Vector2(UnityEngine.Random.Range(-1.5f,1.5f),UnityEngine.Random.Range(-1.5f,1.5f));
+        drag.dragging = true;
 
         fighter.CheckStatus();
     }
     public void CreateAttacker(int goodGuysIndex) {
         GameObject instance = GameObject.Instantiate(gameLib.mobPrefab);
-        instance.transform.position = GameObject.FindGameObjectsWithTag("Respawn")[0].transform.position + new Vector3(UnityEngine.Random.Range(-2f,2f),UnityEngine.Random.Range(-2f,2f),0);
+        instance.transform.position = GameObject.FindGameObjectsWithTag("Respawn")[0].transform.position + new Vector3(UnityEngine.Random.Range(-1.5f,1.5f),UnityEngine.Random.Range(-1.5f,1.5f),0);
         Fighter fighter = instance.GetComponent<Fighter>();
+        attackers.Add(fighter);
         UniqueChar attackerDef = gameLib.evilGoodGuys[goodGuysIndex];
         fighter.adjustments = attackerDef.adjustments;
         fighter.stats = attackerDef.stats;
@@ -293,6 +325,10 @@ public class GridOverlord : MonoBehaviour
         fighter.bodyDown = attackerDef.bodyDown;
         fighter.attackDown = attackerDef.attackDown;
         fighter.attackUp = attackerDef.attackUp;
+        fighter.rangedAttackSprite = attackerDef.rangedAttackSprite;
+        
+        fighter.attackSound = attackerDef.attackSound;
+        fighter.deathSound = attackerDef.deathSound;
 
         fighter.inRoom = roomGrid[0][0].GetComponent<CaveRoom>();
 
@@ -300,12 +336,16 @@ public class GridOverlord : MonoBehaviour
     }
 
     public void StartNextRaid() {
-        // CreateAttacker(gameLib.raids[0].waves[0].attackers[0]);
-        int raidIndex = gameData.level;
-        ongoingRaid = gameLib.raids[raidIndex];
-        waveIndexes = new List<int>();
-        raidTimer = 0f;
-        raidOngoing = true;
+        CreateAttacker(2);
+        CreateAttacker(2);
+        // Camera.main.GetComponent<AudioSource>().Play();
+        // int raidIndex = gameData.level;
+        // if (raidIndex >= gameLib.raids.Length) raidIndex = gameLib.raids.Length-1;
+        // ongoingRaid = gameLib.raids[raidIndex];
+        // waveIndexes = new List<int>();
+        // raidTimer = 0f;
+        // lastWaveSent = false;
+        // raidOngoing = true;
     }
 
     public void StopRaid() {

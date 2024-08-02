@@ -9,6 +9,7 @@ public enum TargetType
     Life,
     WarriorMenu,
     Stats,
+    Cost
 }
 
 public class HoverTarget : MonoBehaviour
@@ -39,12 +40,15 @@ public class HoverTarget : MonoBehaviour
             if (item == TargetType.WarriorMenu) {
                 uIManager.ShowWarriorMenu(subTypeIds[i]);
             }
+            if (item == TargetType.Cost) {
+                uIManager.ShowCostMenu(subTypeIds[i]);
+            }
         }
     }
  
    void OnMouseExit()
    {
-        StartCoroutine(ExecuteAfterTime(4f, () =>
+        StartCoroutine(ExecuteAfterTime(1f, () =>
         {        
             for( int i = 0; i<uITypes.Length; i++)
             {
@@ -54,6 +58,9 @@ public class HoverTarget : MonoBehaviour
                 }
                 if (item == TargetType.WarriorMenu) {
                     uIManager.HidewWarriorMenu();
+                }
+                if (item == TargetType.Cost) {
+                    uIManager.HideCost();
                 }
             }
         }));

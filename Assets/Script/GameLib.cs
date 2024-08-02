@@ -9,7 +9,7 @@ public class Currency
 {
     public int id;
     public string name;
-    public float startingAmount;
+    public int startingAmount;
     public Sprite icon;
 }
 [Serializable]
@@ -132,6 +132,8 @@ public class CharStats { // saveable object
     public int level;
     public float range;
     public float moveSpeed;
+    public float attackCooldown;
+    public float attackDamageDelay = 0.5f;
 
     public float lifeCurrent;
     public float lifeMax;
@@ -151,6 +153,12 @@ public class CharAdjustments {
     public float feetX = 1f;
     public float feetY = -3f;
     public float heaveFactor = 1f;
+    public float feetAnimFactor = 1f;
+    public float stepDuration = 0.5f;
+    public float scale = 1f;
+
+    public bool noHeave=false;
+    public bool bodyChangeOnMove=false;
 }
 
 [Serializable]
@@ -159,6 +167,9 @@ public class UniqueChar { // game data
 
     public CharStats stats;
     public CharAdjustments adjustments;
+
+    public AudioClip attackSound;
+    public AudioClip deathSound;
     
     public Sprite foot1;
     public Sprite foot2;
@@ -166,6 +177,8 @@ public class UniqueChar { // game data
     public Sprite bodyUp;
     public Sprite attackDown;
     public Sprite attackUp;
+
+    public Sprite rangedAttackSprite;
 
     public UniqueChar Clone()
     {
@@ -188,6 +201,30 @@ public class Raid { // saveable object
     public Wave[] waves; 
 
     public int reward;
+    
+    public float timeAfterLastWaveToEnd = 10f;
+}
+
+
+
+
+// |=|-|=|-|=|-|=|Market|=|-|=|-|=|-|=|-|=|-| //
+public enum SaleType
+{
+    NewRoom,
+    Defender,
+    Asset,
+}
+
+[Serializable]
+public class Sale 
+{
+    public int id;
+    public string name;
+    public int cost;
+    public int currency;
+    public SaleType saleType;
+    public int saleItemIndex;
 }
 
 
@@ -201,6 +238,9 @@ public class GameLib : MonoBehaviour
     public GameObject[] roomPrefab;
     public GameObject plusPrefab;
     public GameObject mobPrefab;
+    public GameObject hitPrefab;
+    public GameObject deathPrefab;
+    public GameObject projectilePrefab;
 
     // textures
     public Texture2D pointerCursorTexture;
@@ -219,6 +259,8 @@ public class GameLib : MonoBehaviour
     public UniqueChar[] evilGoodGuys; 
     [SerializeField]
     public Raid[] raids; 
+    [SerializeField]
+    public Sale[] sales; 
 
     // Start is called before the first frame update
     void Start()
