@@ -36,13 +36,13 @@ public class Projectile : MonoBehaviour
         Vector2 moveDirection = (Vector2)target - (Vector2)transform.position;
         moveDirection.Normalize();
         float targetAngle = Mathf.Atan2 (moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler (0, 0, targetAngle + 180);
+        transform.rotation = Quaternion.Euler (0, 0, targetAngle + 270);
     }   
     private void Destroy() {
         if (going && Vector3.Distance(firingPoint, target) < 0.5f) {
             Destroy(this.gameObject);
         }
         lifetime+=Time.deltaTime;
-        if (lifetime > 3) Destroy(this.gameObject);
+        if (lifetime > 1.7f) Destroy(this.gameObject);
     }
 }

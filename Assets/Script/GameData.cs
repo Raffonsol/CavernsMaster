@@ -9,6 +9,7 @@ public class GameData : MonoBehaviour
     public int[] currencyAmounts;
     public int lastRoomId = 0;
     public int lastCharId = 0;
+    public int lastPopGId = 0;
 
 
 

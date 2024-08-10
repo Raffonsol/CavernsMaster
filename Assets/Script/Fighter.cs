@@ -47,6 +47,8 @@ public class Fighter : MonoBehaviour
     // combat
     private Fighter inFight;
     private bool combatMode = false;
+    private GameObject breakingThis;
+    private bool breakingSomething = false;
 
     // timers
     private float animationTime = 0f;
@@ -134,6 +136,14 @@ public class Fighter : MonoBehaviour
             }
         }
     }
+    public void InitiateBreakSomething(GameObject thing) {
+        if (combatMode) return;
+        breakingThis = thing;
+        breakingSomething = true;
+        attackCooldown = stats.attackCooldown;
+        movePosition = transform.position;
+        animationTime=0;
+    }
     
     
     // Update is called once per frame
@@ -142,6 +152,10 @@ public class Fighter : MonoBehaviour
         FixSortingOrder();
         if (combatMode) {
             Fight();
+            return;
+        }
+        if (breakingSomething) {
+            GoBreak();
             return;
         }
         Move();
@@ -224,8 +238,8 @@ public class Fighter : MonoBehaviour
         leg1.transform.localPosition = new Vector2(adjustments.feetX*-1, adjustments.feetY);
         leg2.transform.localPosition = new Vector2(adjustments.feetX, adjustments.feetY);
         
-        leg1.GetComponent<SpriteRenderer>().sprite = foot1;
-        leg2.GetComponent<SpriteRenderer>().sprite = foot2;
+        leg1.GetComponent<SpriteRenderer>().sprite = adjustments.bodyChangeOnMove ? null : foot1;
+        leg2.GetComponent<SpriteRenderer>().sprite = adjustments.bodyChangeOnMove ? null : foot2;
         body.GetComponent<SpriteRenderer>().sprite = bodyDown;
     }
     void RunAi() {
@@ -259,29 +273,37 @@ public class Fighter : MonoBehaviour
 
     }
     void Fight() {
+        if (attackingTimer > 0) { // restore normal state after attackingTimer is down to 0
+            attackingTimer-=Time.deltaTime;
+            if (attackingTimer <=0){
+                body.GetComponent<SpriteRenderer>().sprite = facingUp? bodyUp: bodyDown;
+            }
+            return; // don't fight while in attack animation. Nothing else happens
+        }
         if (inFight == null || inFight.gameObject == null) {
             combatMode = false;
+            if(stats.faction==0){
+                Draggable drag = GetComponent<Draggable>();
+                float[] coordinates = Util.GetPositionPerType(inRoom.defs.type, drag.inQuadrant);
+                
+                SetMoveTarget(new Vector2(coordinates[0] + drag.lastQuadrant.transform.position.x +drag. diviShift.x, coordinates[1] + drag.lastQuadrant.transform.position.y + drag.diviShift.y));
+
+             }// defender mobs go back to where they were
             inRoom.DeclareFigher(this);
             FixLooks();
             return;
         }
-        if (Vector3.Distance(transform.position, inFight.gameObject.transform.position) < stats.range) {
+        if (Vector3.Distance(transform.position, inFight.gameObject.transform.position) < stats.range) { // && Math.Abs(transform.position.y-inFight.gameObject.transform.position.y) > 1f
             
             Heave();
             StopStepping();
 
-            if (attackingTimer > 0) { // restore normal state after attackingTimer is down to 0
-                attackingTimer-=Time.deltaTime;
-                if (attackingTimer <=0){
-                    body.GetComponent<SpriteRenderer>().sprite = facingUp? bodyUp: bodyDown;
-                    inFight.TakeDamage(stats.attackDamage);
-                }
-            }
-            else if (attackCooldown > 0) {
+            if (attackCooldown > 0) {
                 attackCooldown -= Time.deltaTime;
             } else {
                 attackCooldown = stats.attackCooldown;
                 attackingTimer = stats.attackDamageDelay;
+                inFight.TakeDamage(stats.attackDamage);
                 
                 // anims and sounds
                 body.GetComponent<SpriteRenderer>().sprite = facingUp? attackUp: attackDown;
@@ -300,14 +322,69 @@ public class Fighter : MonoBehaviour
         } else {
             Step();
 
-            Vector2 currentPosition = transform.position;
-            animationTime += stats.moveSpeed * Time.deltaTime*0.15f;
-            transform.position = ( Vector3.Lerp (movePosition, inFight.gameObject.transform.position, animationTime));
-
-            Flip(inFight.gameObject.transform.position);
+            if (!Util.IsAngleVertical(transform.position,inFight.gameObject.transform.position)) {
+                movePosition.y += Time.deltaTime*0.5f * (stats.faction == 0 ? 1 : -1);
+            } 
+                animationTime += stats.moveSpeed * Time.deltaTime*0.15f;
+                transform.position = ( Vector3.Lerp (movePosition, inFight.gameObject.transform.position, animationTime));
         }
+            
+        Flip(inFight.gameObject.transform.position);
         
     }
+    void GoBreak() {
+        if (attackingTimer > 0) { // restore normal state after attackingTimer is down to 0
+            attackingTimer-=Time.deltaTime;
+            if (attackingTimer <=0){
+                body.GetComponent<SpriteRenderer>().sprite = facingUp? bodyUp: bodyDown;
+            }
+            return; // don't fight while in attack animation. Nothing else happens
+        }
+        if (breakingThis == null ) {
+            breakingSomething = false;
+            
+            inRoom.DeclareFigher(this);
+            FixLooks();
+            return;
+        }
+        if (Vector3.Distance(transform.position, breakingThis.transform.position) < stats.range) {
+            
+            Heave();
+            StopStepping();
+
+            if (attackCooldown > 0) {
+                attackCooldown -= Time.deltaTime;
+            } else {
+                attackCooldown = stats.attackCooldown;
+                attackingTimer = stats.attackDamageDelay;
+                breakingThis.GetComponent<Target>().TakeDamage(stats.attackDamage);
+                
+                // anims and sounds
+                body.GetComponent<SpriteRenderer>().sprite = facingUp? attackUp: attackDown;
+                audioSource.clip = attackSound;
+                audioSource.Play();
+
+                // ranged created arrow
+                if (rangedAttackSprite != null) {
+                    GameObject arrow = Instantiate(GridOverlord.Instance.gameLib.projectilePrefab,transform.position, transform.rotation);
+                    arrow.GetComponent<SpriteRenderer>().sprite = rangedAttackSprite;
+                    arrow.GetComponent<Projectile>().target = breakingThis.transform.position;
+                    arrow.GetComponent<Projectile>().Go();
+                }
+            }
+
+        } else {
+            Step();
+
+                animationTime += stats.moveSpeed * Time.deltaTime*0.15f;
+                transform.position = ( Vector3.Lerp (movePosition, breakingThis.transform.position, animationTime));
+        }
+            
+        Flip(breakingThis.transform.position);
+        
+    }
+    
+    
     void Flip(Vector2 targetPosition) {
             if (!facingUp) {
                 if (targetPosition.y > transform.position.y) {
@@ -338,7 +415,6 @@ public class Fighter : MonoBehaviour
         } else {
             GridOverlord.Instance.attackers.RemoveAll(x => x.fighterId == fighterId);
         }
-        // TODO: Death animation
         Destroy(gameObject);
     }
     void FixSortingOrder() {

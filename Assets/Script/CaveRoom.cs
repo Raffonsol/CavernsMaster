@@ -19,7 +19,7 @@ public class CaveRoom : MonoBehaviour
     public QuarterDefinition quarterDefinition;
 
     // game objects -- content
-    public List<DivisionUsage> sections;
+    public List<GameObject> sections;
 
     // pathing
     public List<Coordinates> forwardCoo = new List<Coordinates>();
@@ -32,7 +32,8 @@ public class CaveRoom : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        sections = new List<DivisionUsage>(new DivisionUsage[defs.size]);
+        sections = new List<GameObject>(new GameObject[4]);
+        Camera.main.GetComponent<CameraController>().PlaySound(GridOverlord.Instance.gameLib.newRoom);
     }
 
     // Update is called once per frame
@@ -59,7 +60,7 @@ public class CaveRoom : MonoBehaviour
                 }else {
 
                     if ((GridOverlord.Instance.roomGrid.ContainsKey(defs.xPos) && GridOverlord.Instance.roomGrid[defs.xPos].ContainsKey(defs.yPos - 1) )) {
-                        GridOverlord.Instance.roomGrid[defs.xPos][defs.yPos - 1].GetComponent<CaveRoom>().DisablePlus("front");;
+                        GridOverlord.Instance.roomGrid[defs.xPos][defs.yPos - 1].GetComponent<CaveRoom>().DisablePlus("front");
                     } else if (quarterDefinition.availableDoors.Contains(DoorType.South) || defs.type == RoomType.DefaultRoom) {
                         if(backPlus!= null)backPlus.SetActive(true);else backPlus = InstantiatePlus(0f, -5f, 0,-1, "down");
                     }
@@ -107,36 +108,55 @@ public class CaveRoom : MonoBehaviour
         else{
 
         }
-        
         // sections
         for( int i = 0; i < defs.contentIds.Length; i++) {
             if (defs.contentIds[i] > -1 && sections[i] == null) {
                 DivisionUsage divi = GridOverlord.Instance.gameLib.roomDivisions[defs.contentIds[i]];
-                sections[i] = divi;
                 //placing
-                GameObject contenter = GameObject.Instantiate(divi.gameObject);
+                GameObject contenter = GameObject.Instantiate(GridOverlord.Instance.gameLib.itemPrefab);
+                sections[i] = contenter;
+                contenter.GetComponent<SpriteRenderer>().sprite = divi.sprite;
+                contenter.transform.localScale = new Vector2(divi.scale, divi.scale);
                 float[] coordinates = Util.GetPositionPerType(defs.type, i);
                 Vector2 divisionPos = defs.type == RoomType.BirthRoom 
                  ? new Vector2(0,-12f) //birth room doesnt worry about divisions stuff
                  : quadrants[i].transform.position;
+                 if (!divi.hasShadow) contenter.transform.Find("shadow").gameObject.SetActive(false);
                 // -------------------------- modifier for room type ------ quadrant pos --- modifier from this specific division ----------------- //
                 contenter.transform.position = new Vector2(coordinates[0] + divisionPos.x + divi.shift.x, coordinates[1] + divisionPos.y+ divi.shift.y);
-                //adding scripts to it
                 bool needsCollider = false;bool hasHoverTarget = false;
+
+                if (divi.id == 3){ // hardcoded id for mystery item
+                    GridOverlord.Instance.gameLib.mysteryItems.Shuffle();
+                    MysteryItem item = GridOverlord.Instance.gameLib.mysteryItems[0];
+                    MysteryContent mc = contenter.AddComponent<MysteryContent>();
+                    mc.itemDefs = item;
+                    mc.ForcedStart();
+                    needsCollider=true;hasHoverTarget=true;
+                    mc.inRoom = this; mc.inQuadrant = i;
+                }
+                //adding scripts to it
                 if (divi.effect.Contains("cs")){ // hoverable to show a currency
                     HoverTarget hovTar = contenter.AddComponent<HoverTarget>();
                     hovTar.uITypes = new TargetType[]{TargetType.Life, TargetType.Currency};
-                    
                     hovTar.subTypeIds = new int[]{0, Int32.Parse(divi.effect.Substring(divi.effect.IndexOf("cs")+2,2))}; // second index for currency type
-                    hovTar.ForcedStart();
+                    // hovTar.ForcedStart();
                     needsCollider=true;hasHoverTarget=true;
+                    
+                    if (divi.effect.Contains("gp")){ // grow population
+                        PopGrower popG = contenter.AddComponent<PopGrower>();
+                        popG.popCurrencyIndex = Int32.Parse(divi.effect.Substring(divi.effect.IndexOf("cs")+2,2));
+                        popG.popGrowthType = Int32.Parse(divi.effect.Substring(divi.effect.IndexOf("gp")+2,1));
+                    }
                 }
                 if (divi.effect.Contains("tg")){ // targetable
                     Target tar = contenter.AddComponent<Target>();
                     tar.tarDef = new TargetDefinitions();
                     tar.tarDef.attacker = false;
                     tar.tarDef.moveSpeed = 0;
-                    tar.tarDef.maxLife=divi.life;
+                    tar.divi=divi;
+                    tar.inRoom = this;
+                    tar.inQuadrant = i;
                     // TODO: add satisfaction percentage [SASTIF]
                     tar.ForcedStart();
                     needsCollider = true;
@@ -144,31 +164,32 @@ public class CaveRoom : MonoBehaviour
                 if (divi.effect.Contains("wm")){ // hoverable to show a warrior menu
                     HoverTarget hovTar;
                     if (hasHoverTarget) {
-                    hovTar = contenter.GetComponent<HoverTarget>();
-                    List<TargetType> targets = new List<TargetType>(hovTar.uITypes);
-                    targets.Add(TargetType.WarriorMenu);
-                    hovTar.uITypes = targets.ToArray();
-                    // --- subtypes ----
-                    List<int> subTypes = new List<int>(hovTar.subTypeIds);
-                    subTypes.Add(Int32.Parse(divi.effect.Substring(divi.effect.IndexOf("wm")+2,3)));
-                    hovTar.subTypeIds = subTypes.ToArray();
+                        hovTar = contenter.GetComponent<HoverTarget>();
+                        List<TargetType> targets = new List<TargetType>(hovTar.uITypes);
+                        targets.Add(TargetType.WarriorMenu);
+                        hovTar.uITypes = targets.ToArray();
+                        // --- subtypes ----
+                        List<int> subTypes = new List<int>(hovTar.subTypeIds);
+                        subTypes.Add(Int32.Parse(divi.effect.Substring(divi.effect.IndexOf("wm")+2,3)));
+                        hovTar.subTypeIds = subTypes.ToArray();
                     } else {
-                    hovTar = contenter.AddComponent<HoverTarget>();
-                    hovTar.uITypes = new TargetType[]{TargetType.WarriorMenu};
-                    hasHoverTarget=true;
-                    hovTar.subTypeIds = new int[]{Int32.Parse(divi.effect.Substring(divi.effect.IndexOf("wm")+2,3))}; // second index for currency type
+                        hovTar = contenter.AddComponent<HoverTarget>();
+                        hovTar.uITypes = new TargetType[]{TargetType.WarriorMenu};
+                        hasHoverTarget=true;
+                        hovTar.subTypeIds = new int[]{Int32.Parse(divi.effect.Substring(divi.effect.IndexOf("wm")+2,3))}; // second index for currency type
                     }
-                    hovTar.ForcedStart();
+                    // hovTar.ForcedStart();
                     needsCollider=true;
                 }
                 Draggable drag = contenter.AddComponent<Draggable>();
-                if (divi.effect.Contains("fp")){
+                if (divi.effect.Contains("fp") || divi.id == 3){
                     // drag.gameObject.layer = 2;
                     drag.fixedPos = true;
                 }
                 drag.inRoom = this;
                 drag.inQuadrant = i;
                 drag.diviShift = divi.shift;
+                drag.thingIndex = defs.contentIds[i];
                 if (needsCollider) {
                     BoxCollider2D coll = contenter.AddComponent<BoxCollider2D>();
                     coll.isTrigger = true;
@@ -198,11 +219,27 @@ public class CaveRoom : MonoBehaviour
         List<Fighter> enemies = fighter.stats.faction == 0 ? GridOverlord.Instance.attackers : GridOverlord.Instance.defenders;
         enemies.Shuffle();
         
+        // look for fight
         for (int i = 0; i < enemies.Count; i++)
         {
             if (enemies[i].inRoom == this) {
                 fighter.InitiateCombat(enemies[i]);
                 enemies[i].InitiateCombat(fighter);
+                return;
+            }            
+        }
+
+        // no fight, let's break stuff
+        if (fighter.stats.faction ==0) return; // unless we're defending ofc
+
+        for (int i = 0; i < defs.contentIds.Length; i++)
+        {
+            if (defs.contentIds[i] != -1) {
+                DivisionUsage thing = GridOverlord.Instance.gameLib.roomDivisions[defs.contentIds[i]];
+                if (thing.effect.Contains("tg")) {
+                    fighter.InitiateBreakSomething(sections[i]);
+                    return;
+                }
             }            
         }
     }

@@ -12,7 +12,9 @@ public class Draggable : MonoBehaviour
     bool hovering = false;
     public bool dragging = false;
     Vector2 fixedPosition;
-    GameObject lastQuadrant;
+    public GameObject lastQuadrant;
+
+    public int thingIndex = -1;
     
     public void ForcedStart()
     {
@@ -46,12 +48,38 @@ public class Draggable : MonoBehaviour
     }
     public void Drop()
     {
-        
+        if (lastQuadrant == null) {
+            GridOverlord.Instance.ShowError("Cannot be dropped here!", transform.position);
+            return;
+        }
+        CaveRoom targetRoom = lastQuadrant.gameObject.transform.parent.GetComponent<CaveRoom>();
+        if (thingIndex != -1 && inQuadrant != Int32.Parse(lastQuadrant.name.Substring(8)) && targetRoom.defs.contentIds[Int32.Parse(lastQuadrant.name.Substring(8))] != -1) {
+            GridOverlord.Instance.ShowError("There is already something here!", transform.position);
+            return;
+        }
+
+        if (inRoom != null && thingIndex!= -1) {
+            inRoom.defs.contentIds[inQuadrant] = -1;
+            inRoom.sections[inQuadrant] = null;
+        }
+
+        dragging = false;
+        CameraController.noDrag = false;
+
         float[] coordinates = Util.GetPositionPerType(inRoom.defs.type, inQuadrant);
         transform.position = new Vector2(coordinates[0] + lastQuadrant.transform.position.x + diviShift.x, coordinates[1] + lastQuadrant.transform.position.y + diviShift.y);
         fixedPosition = transform.position;
-        inRoom = lastQuadrant.gameObject.transform.parent.GetComponent<CaveRoom>();
+        inRoom = targetRoom;
         inQuadrant = Int32.Parse(lastQuadrant.name.Substring(8));
+        Target tar = gameObject.GetComponent<Target>();
+        if (tar!= null) { // for targetable thing sbeing dragged
+            tar.inRoom = targetRoom;
+            tar.inQuadrant = Int32.Parse(lastQuadrant.name.Substring(8));
+        }
+        if (thingIndex != -1){ // for things being dragged
+            inRoom.defs.contentIds[inQuadrant] = thingIndex;
+            inRoom.sections[inQuadrant] = gameObject;
+        }
         try {
             gameObject.GetComponent<Fighter>().inRoom = inRoom;
             inRoom.DeclareFigher(gameObject.GetComponent<Fighter>());
@@ -60,7 +88,7 @@ public class Draggable : MonoBehaviour
 
     void OnMouseDown()
     {
-        if(!fixedPos){
+        if(!fixedPos && GridOverlord.Instance.attackers.Count <= 0){
             dragging = true;
             CameraController.noDrag = true;
         }
@@ -69,8 +97,6 @@ public class Draggable : MonoBehaviour
     {
         if(dragging){
             Drop();
-            dragging = false;
-            CameraController.noDrag = false;
         }
     }
 

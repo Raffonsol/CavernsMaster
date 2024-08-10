@@ -16,6 +16,16 @@ public class CameraController : MonoBehaviour
     private float goingDragSpeed;
     private Camera cam;
 
+
+    public void PlayMusic(AudioClip track) {
+       gameObject.GetComponent<AudioSource>().clip = track;
+       gameObject.GetComponent<AudioSource>().Play();
+    }
+    public void PlaySound(AudioClip track) {
+       transform.Find("SE").gameObject.GetComponent<AudioSource>().clip = track;
+       transform.Find("SE").gameObject.GetComponent<AudioSource>().Play();
+    }
+
     void Awake ()
     {
         cam = Camera.main;

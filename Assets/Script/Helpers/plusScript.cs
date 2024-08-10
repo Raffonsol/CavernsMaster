@@ -23,7 +23,7 @@ public class plusScript : MonoBehaviour
         HoverTarget costHover = gameObject.AddComponent<HoverTarget>();
         costHover.uITypes = new TargetType[]{(TargetType)4,(TargetType)0};
         costHover.subTypeIds = new int[]{0,0};
-        costHover.ForcedStart();
+        // costHover.ForcedStart();
     }
 
     // Update is called once per frame
@@ -50,13 +50,13 @@ public class plusScript : MonoBehaviour
     {
         if(hovering){
             if (!GridOverlord.Instance.gameData.CheckIfCanAfford(0,5)){ // HARDCODED ROOM COST CHANGE THIS!!!
-                // TODO: Can't afford message!
+                GridOverlord.Instance.ShowError("Need 5 gold!", transform.position);
                 return;
             }
             GridOverlord.Instance.gameData.SpendCurrency(0,5);
             GridOverlord.Instance.CreateRoom(new RoomDefinition(){
                 size = 0,
-                contentIds = new int[]{-1, -1, -1, -1},
+                contentIds = new int[]{-1,-1,-1,-1},
                 xPos=xPos,
                 yPos=yPos,
                 type = RoomType.DefaultRoom

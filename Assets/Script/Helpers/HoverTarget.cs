@@ -19,7 +19,7 @@ public class HoverTarget : MonoBehaviour
     public int[] subTypeIds;
 
     // Start is called before the first frame update
-    public void ForcedStart()
+    public void Awake()
     {
         uIManager = GridOverlord.Instance.uIManager;
     }
@@ -38,10 +38,16 @@ public class HoverTarget : MonoBehaviour
                 uIManager.ShowCurrency(subTypeIds[i]);
             }
             if (item == TargetType.WarriorMenu) {
+                uIManager.HideStats();
                 uIManager.ShowWarriorMenu(subTypeIds[i]);
             }
             if (item == TargetType.Cost) {
                 uIManager.ShowCostMenu(subTypeIds[i]);
+            }
+            if (item == TargetType.Stats) {
+                    uIManager.HidewWarriorMenu();
+                Fighter me = GetComponent<Fighter>();
+                uIManager.ShowStatsMenu(me.stats, me.bodyDown);
             }
         }
     }
@@ -62,6 +68,9 @@ public class HoverTarget : MonoBehaviour
                 if (item == TargetType.Cost) {
                     uIManager.HideCost();
                 }
+                if (item == TargetType.Stats) {
+                    uIManager.HideStats();
+            }
             }
         }));
    }

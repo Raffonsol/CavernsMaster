@@ -18,6 +18,14 @@ public class Util
         }
         return value;
     }
+    public static float AngleBetweenTwoPoints(Vector2 point1, Vector2 point2) {
+        return Mathf.Atan2(point2.y - point1.y , point2.x-point1.x) * 180 / Mathf.PI;
+    }
+    public static bool IsAngleVertical(Vector2 point1, Vector2 point2) {
+        float angle = AngleBetweenTwoPoints(point1, point2); 
+        if (angle < 0) angle = 360f-angle;
+        return (angle > 30 && angle < 150) || (angle > 210 && angle < 330);
+    }
 
 }
 public static class MyExtensions

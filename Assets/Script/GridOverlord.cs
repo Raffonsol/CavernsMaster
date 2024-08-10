@@ -32,12 +32,16 @@ public class GridOverlord : MonoBehaviour
     public List<Fighter> defenders = new List<Fighter>();
     public List<Fighter> attackers = new List<Fighter>();
 
+    public List<PopGrower> popGs = new List<PopGrower>();
+
     private bool raidOngoing = false;
     private bool lastWaveSent = false;
     private Raid ongoingRaid;
     private float raidTimer = 0f;
     private float raidCountdown = 0f;
     private List<int> waveIndexes;
+
+    private int roomCount = 0;
 
 
     // Start is called before the first frame update
@@ -50,34 +54,9 @@ public class GridOverlord : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (raidOngoing) {
-            raidTimer+=Time.deltaTime;
-
-            if (lastWaveSent) {
-                raidCountdown-=Time.deltaTime;
-                if (raidCountdown < 0) {
-                    // RAID OVER
-                    gameData.level++;
-                    raidOngoing = false;
-                    gameData.AddCurrency(0,ongoingRaid.reward);
-                    uIManager.ShowNextRaidButton();
-                }
-            } else
-            for (int i = 0; i < ongoingRaid.waves.Length; i++)
-            {
-                if (raidTimer >= ongoingRaid.waves[i].timeOffset && !waveIndexes.Contains(i)){
-                    waveIndexes.Add(i);
-                    for (int j = 0; j < ongoingRaid.waves[i].attackers.Length; j++)
-                    {
-                        CreateAttacker(ongoingRaid.waves[i].attackers[j]);
-                    }
-                    if (waveIndexes.Count == ongoingRaid.waves.Length) {
-                        lastWaveSent = true;
-                        raidCountdown = ongoingRaid.timeAfterLastWaveToEnd;
-                    }
-                }
-            }
-        }
+        ControlMusic();
+        RunRaid();
+        
     }
 
     #nullable enable
@@ -99,7 +78,7 @@ public class GridOverlord : MonoBehaviour
                 frontDoor = false,
                 rightDoor = false,
                 backDoor = false,
-                contentIds = new int[]{0, -1, -1, -1},
+                contentIds = new int[]{0, 2, -1, -1},
                 xPos=0,
                 yPos=0,
                 type= RoomType.DefaultRoom,
@@ -107,7 +86,7 @@ public class GridOverlord : MonoBehaviour
             roomObj = GameObject.Instantiate( gameLib.roomPrefab[0]);
         }
          else{
-            defs = defParam;
+            defs = defParam.Clone();
             if (take>5) {
                 // too many random tries, must not be birth room, and let's just use 1x1 cause nothing else will work
                 roomObj = GameObject.Instantiate( gameLib.roomPrefab[0]);
@@ -148,7 +127,7 @@ public class GridOverlord : MonoBehaviour
                 defs.backDoor = direction == "up";
             }
             // instantiation
-            roomObj.GetComponent<CaveRoom>().defs = defs;
+            roomObj.GetComponent<CaveRoom>().defs = defs.Clone();
             // roomObj = GameObject.Instantiate(roomObj);
             roomObj.transform.localPosition = new Vector3(defs.xPos * 9.6f,defs.yPos* 9.6f);
         
@@ -181,8 +160,7 @@ public class GridOverlord : MonoBehaviour
             {
                 // set defs on quarters
                 CaveRoom quarter = roomObj.transform.Find("quarter"+(i+1)).GetComponent<CaveRoom>();
-                RoomDefinition quarterDefs = defs.Clone();
-                quarter.defs = quarterDefs;
+                quarter.defs = defs.Clone();
                 quarters.Add(quarter);
                 
                 bool isConnectingQuarter = quarter.quarterDefinition.xShift == doorToUse.xSqaure && quarter.quarterDefinition.yShift == doorToUse.ySqaure;
@@ -190,10 +168,10 @@ public class GridOverlord : MonoBehaviour
                 quarter.quarterDefinition.availableDoors = doorOptions.Where(door => door.xSqaure == quarter.quarterDefinition.xShift && door.ySqaure == quarter.quarterDefinition.yShift).Select(door=>door.type).ToList();
 
                 // define connections
-                quarterDefs.frontDoor = direction == "down" && isConnectingQuarter;
-                quarterDefs.leftDoor = direction == "right" && isConnectingQuarter;
-                quarterDefs.rightDoor = direction == "left" && isConnectingQuarter;
-                quarterDefs.backDoor = direction == "up" && isConnectingQuarter ;
+                quarter.defs.frontDoor = direction == "down" && isConnectingQuarter;
+                quarter.defs.leftDoor = direction == "right" && isConnectingQuarter;
+                quarter.defs.rightDoor = direction == "left" && isConnectingQuarter;
+                quarter.defs.backDoor = direction == "up" && isConnectingQuarter ;
 
                 // roomObj = GameObject.Instantiate(roomObj);
                 int newX = defs.xPos-doorToUse.xSqaure+quarter.quarterDefinition.xShift; quarter.defs.xPos = newX;
@@ -230,24 +208,19 @@ public class GridOverlord : MonoBehaviour
                 // grid works
                 roomGrid[newX][newY] = quarter.gameObject;
             }
-            for (int i = 0; i < quarters.Count; i++)
-            {
-                quarters[i].CheckStatus();
-
-               
-            }
             bool firstQuarterFound = false;
             for (int i = 0; i < randomRoom.path.Length; i++)
             {
-                 // pathing
                 int quarterIndex = quarters.FindIndex(0,quarters.Count, (CaveRoom q) => randomRoom.path[i].x == q.quarterDefinition.xShift && randomRoom.path[i].y == q.quarterDefinition.yShift);
-
+                // random content
+                quarters[quarterIndex].defs.contentIds = new int[]{UnityEngine.Random.Range(0,15) > 1 ? -1 : 3, UnityEngine.Random.Range(0,15) > 1 ? -1 : 3, UnityEngine.Random.Range(0,15) > 1 ? -1 : 3, UnityEngine.Random.Range(0,15) > 1 ? -1 : 3};
                 //enable quarters for dragging things into
                 for (int j = 0; j < 4; j++)
                 {
                     quarters[quarterIndex].quadrants[j].SetActive(true);   
                 }
-
+                
+                 // pathing
                 // I don't even want to get into this. Basically it creates paths by giving each room a forward array of all the possible rooms to go forward to, and a backwards array with how to return from it
                 if (i-1 >= 0) {
                     if (firstQuarterFound){
@@ -270,6 +243,19 @@ public class GridOverlord : MonoBehaviour
                     }
                 }
             }
+            for (int i = 0; i < quarters.Count; i++)
+            {
+                quarters[i].CheckStatus();
+
+               
+            }
+        }
+        
+        
+        // if it's third room, game can start
+        roomCount+=1;
+        if (roomCount == 3) {
+            uIManager.ShowNextRaidButton();
         }
     }
     // public void FindNearestQuadrant(GameObject quadrant) {
@@ -279,12 +265,12 @@ public class GridOverlord : MonoBehaviour
 
     public void CreateMob(int mobIndex) {
         GameObject instance = GameObject.Instantiate(gameLib.mobPrefab);
-        instance.transform.position = roomGrid[0][-1].transform.position + new Vector3(UnityEngine.Random.Range(-1.5f,1.5f),UnityEngine.Random.Range(-0.5f,1.5f), 0);
+        instance.transform.position = roomGrid[0][-1].transform.position + new Vector3(UnityEngine.Random.Range(-1.3f,1.3f),UnityEngine.Random.Range(-0.3f,1.3f), 0);
         Fighter fighter = instance.GetComponent<Fighter>();
         defenders.Add(fighter);
         UniqueChar mobDef = gameLib.monsters[mobIndex];
         fighter.adjustments = mobDef.adjustments;
-        fighter.stats = mobDef.stats;
+        fighter.stats = mobDef.stats.Clone();
         instance.transform.localScale = instance.transform.localScale*fighter.adjustments.scale;
 
         fighter.foot1 = mobDef.foot1;
@@ -298,12 +284,14 @@ public class GridOverlord : MonoBehaviour
         fighter.attackSound = mobDef.attackSound;
         fighter.deathSound = mobDef.deathSound;
 
-        // instance.AddComponent<PolygonCollider2D>();
+        HoverTarget ht = instance.AddComponent<HoverTarget>();
+        ht.uITypes = new TargetType[]{TargetType.Stats};
+        ht.subTypeIds = new int[]{0};
         Draggable drag = instance.AddComponent<Draggable>();
         drag.fixedPos = false;
         drag.inRoom = roomGrid[0][-1].GetComponent<CaveRoom>();
         drag.inQuadrant = 0;
-        drag.diviShift = new Vector2(UnityEngine.Random.Range(-1.5f,1.5f),UnityEngine.Random.Range(-1.5f,1.5f));
+        drag.diviShift = new Vector2(UnityEngine.Random.Range(-1.2f,1.2f),UnityEngine.Random.Range(-1.2f,1.2f));
         drag.dragging = true;
 
         fighter.CheckStatus();
@@ -315,7 +303,7 @@ public class GridOverlord : MonoBehaviour
         attackers.Add(fighter);
         UniqueChar attackerDef = gameLib.evilGoodGuys[goodGuysIndex];
         fighter.adjustments = attackerDef.adjustments;
-        fighter.stats = attackerDef.stats;
+        fighter.stats = attackerDef.stats.Clone();
 
         fighter.currentMovementType = MovementType.Advancing;
 
@@ -336,20 +324,67 @@ public class GridOverlord : MonoBehaviour
     }
 
     public void StartNextRaid() {
-        CreateAttacker(2);
-        CreateAttacker(2);
-        // Camera.main.GetComponent<AudioSource>().Play();
-        // int raidIndex = gameData.level;
-        // if (raidIndex >= gameLib.raids.Length) raidIndex = gameLib.raids.Length-1;
-        // ongoingRaid = gameLib.raids[raidIndex];
-        // waveIndexes = new List<int>();
-        // raidTimer = 0f;
-        // lastWaveSent = false;
-        // raidOngoing = true;
+        // CreateAttacker(2);
+        // CreateAttacker(2);
+        Camera.main.GetComponent<CameraController>().PlayMusic(gameLib.combatMusic[UnityEngine.Random.Range(0, gameLib.combatMusic.Length)]);
+        int raidIndex = gameData.level;
+        if (raidIndex >= gameLib.raids.Length) raidIndex = gameLib.raids.Length-1;
+        ongoingRaid = gameLib.raids[raidIndex];
+        waveIndexes = new List<int>();
+        raidTimer = 0f;
+        lastWaveSent = false;
+        raidOngoing = true;
     }
 
     public void StopRaid() {
        raidOngoing = false;
+    }
+
+    public void ShowError(string errorMessage, Vector2 position) {
+        GameObject floaty = GameObject.Instantiate(gameLib.floatTextPrefab);
+        floaty.GetComponent<FloatingText>().textToDisplay = errorMessage;
+        floaty.transform.position = position;
+        Camera.main.GetComponent<CameraController>().PlaySound(gameLib.errorSound);
+    }
+
+    private void RunRaid() {
+        if (!raidOngoing)  return;
+        
+        raidTimer+=Time.deltaTime;
+
+        if (lastWaveSent) {
+            raidCountdown-=Time.deltaTime;
+            if (raidCountdown < 0) {
+                // RAID OVER
+                gameData.level++;
+                raidOngoing = false;
+                gameData.AddCurrency(0,ongoingRaid.reward);
+                for (int i = 0; i < popGs.Count; i++)
+                {
+                    popGs[i].RunGrowth();
+                }
+                uIManager.ShowNextRaidButton();
+            }
+        } else
+        for (int i = 0; i < ongoingRaid.waves.Length; i++)
+        {
+            if (raidTimer >= ongoingRaid.waves[i].timeOffset && !waveIndexes.Contains(i)){
+                waveIndexes.Add(i);
+                for (int j = 0; j < ongoingRaid.waves[i].attackers.Length; j++)
+                {
+                    CreateAttacker(ongoingRaid.waves[i].attackers[j]);
+                }
+                if (waveIndexes.Count == ongoingRaid.waves.Length) {
+                    lastWaveSent = true;
+                    raidCountdown = ongoingRaid.timeAfterLastWaveToEnd;
+                }
+            }
+        }
+        
+    }
+    private void ControlMusic() {
+        if (!raidOngoing && attackers.Count == 0)
+            Camera.main.GetComponent<AudioSource>().Stop();
     }
 
     private bool DoesRoomWork(RandomRoom random, string direction) {

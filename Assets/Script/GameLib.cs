@@ -4,6 +4,11 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 
+
+
+// ^v^v^v^v^v^v^v^Support^v^v^v^v^v^v^v^v^v^v^ //
+
+
 [Serializable]
 public class Currency 
 {
@@ -23,15 +28,44 @@ public class Coordinates
 
 
 
-// -=-=-=-=-=-=-=-Map-=-=-=-=-=-=-=-=-=-=- //
+// *.*.*.*.*.*.*.*Items*.*.*.*.*.*.*.*.*.*.* //
+
+
+public enum MysteryOptionType
+{
+    Division,
+    Mob,
+    Trap,
+    Bonus
+}
+[Serializable]
+public class MysteryOption
+{
+    public string name;
+    public string description;
+
+    public MysteryOptionType type;
+    public int optionItemIndex;
+
+    public Sprite icon;
+}
+[Serializable]
+public class MysteryItem
+{
+    public int id;
+    public string name;
+    public int minLevel;
+    public MysteryOption[] mysteryOptions;
+    public Sprite sprite;
+    public float scale;
+}
 [Serializable]
 public class DivisionUsage
 {
     public int id;
     public string name;
-    public GameObject gameObject;
+    public Sprite sprite;
     public float life;
-    public string effect;
     /**
     * Effect codes
     * *Rules
@@ -43,10 +77,24 @@ public class DivisionUsage
     * - cs - currency storage - expects identifier (0 = gold, 1 = population) - 2 identifier chars
     * - tg - target (attackers will go to this) - expects satisfaction percentage quantity - 3 percentage chars
     * - rq - required - cannot be deleted, only moved - no identifier or quantity char
-    * - wm - warrior menu - expects warrior unit identifier - 3 identifier chars
+    * - wm - warrior menu - expects warrior menu identifier - 3 identifier chars
+    * - ff - lose condition - if this is destroyed, lose game - no identifier or anything
+    * - gp - grow population - some method of growing population - 0 - every turn, grow by half - 1 - gain 1 per turn - 2 - gain 1 when enemy dies nearby
     */
+    public string effect;
     public Vector2 shift;
+
+
+    // adjustments
+    public float scale;
+    public bool hasShadow = true;
 }
+
+
+
+// -=-=-=-=-=-=-=-Map-=-=-=-=-=-=-=-=-=-=- //
+
+
 public enum DoorType
 {
     North,
@@ -189,6 +237,8 @@ public class UniqueChar { // game data
 
 
 // ~=~=~=~=~=~=~=~Waveees~=~=~=~=~=~=~=~=~=~=~ //
+
+
 [Serializable]
 public class Wave {
     public float timeOffset;
@@ -209,6 +259,8 @@ public class Raid { // saveable object
 
 
 // |=|-|=|-|=|-|=|Market|=|-|=|-|=|-|=|-|=|-| //
+
+
 public enum SaleType
 {
     NewRoom,
@@ -241,6 +293,14 @@ public class GameLib : MonoBehaviour
     public GameObject hitPrefab;
     public GameObject deathPrefab;
     public GameObject projectilePrefab;
+    public GameObject floatTextPrefab;
+    public GameObject itemPrefab;
+
+    // music
+    public AudioClip[] homeMusic;
+    public AudioClip[] combatMusic;
+    public AudioClip newRoom;
+    public AudioClip errorSound;
 
     // textures
     public Texture2D pointerCursorTexture;
@@ -261,16 +321,8 @@ public class GameLib : MonoBehaviour
     public Raid[] raids; 
     [SerializeField]
     public Sale[] sales; 
+    [SerializeField]
+    public MysteryItem[] mysteryItems;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }
